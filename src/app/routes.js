@@ -4,7 +4,7 @@ const healthRoutes = require("../modules/health/health.routes");
 const orderRoutes = require("../modules/orders/order.routes");
 
 
-// / const couponRoutes = require("../modules/coupons/coupon.routes");
+const couponRoutes = require("../modules/coupons/coupon.routes");
 
 const router = Router();
 
@@ -12,6 +12,6 @@ const router = Router();
 router.use("/health", healthRoutes);
 router.use("/orders", orderRoutes);
 
-// router.use("/coupons", couponRoutes);
+router.use("/coupons", couponRoutes);
 
 module.exports = router;
