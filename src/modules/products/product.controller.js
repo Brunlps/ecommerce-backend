@@ -1,99 +1,70 @@
+const AppError = require("../../shared/errors/AppError");
 const ProductService = require("./product.service");
 
 class ProductController {
-  static async create(req, res) {
+  static async create(req, res, next) {
     try {
       const resultado = await ProductService.create(req.body);
-      
-      if (!resultado.sucesso) {
-        return res.status(400).json({ erro: resultado.erro });
-      }
-      
-      res.status(201).json(resultado.dados);
+      return res.status(201).json(resultado);
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 
-  static async getAll(req, res) {
+  static async getAll(req, res, next) {
     try {
       const resultado = await ProductService.findAll();
-      
-      if (!resultado.sucesso) {
-        return res.status(400).json({ erro: resultado.erro });
-      }
-      
-      res.status(200).json(resultado.dados);
+      return res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 
-  static async getById(req, res) {
+  static async getById(req, res, next) {
     try {
       const { id } = req.params;
       const resultado = await ProductService.findById(id);
-
-      if (!resultado.sucesso) {
-        return res.status(404).json({ erro: resultado.erro });
-      }
-
-      res.status(200).json(resultado.dados);
+      return res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 
-  static async update(req, res) {
+  static async update(req, res, next) {
     try {
       const { id } = req.params;
       const resultado = await ProductService.update(id, req.body);
-
-      if (!resultado.sucesso) {
-        return res.status(404).json({ erro: resultado.erro });
-      }
-
-      res.status(200).json(resultado.dados);
+      return res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 
-  static async delete(req, res) {
+  static async delete(req, res, next) {
     try {
       const { id } = req.params;
-      const resultado = await ProductService.delete(id);
+      await ProductService.delete(id);
 
-      if (!resultado.sucesso) {
-        return res.status(404).json({ erro: resultado.erro });
-      }
-
-      res.status(200).json({ mensagem: resultado.mensagem });
+      res.status(200).json({ mensagem: "Produto deletado com sucesso" });
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 
-  static async atualizarTamanhos(req, res) {
+  static async atualizarTamanhos(req, res, next) {
     try {
       const { id } = req.params;
       const { tamanhos } = req.body;
 
       if (!Array.isArray(tamanhos)) {
-        return res.status(400).json({ 
-          erro: "O campo 'tamanhos' deve ser um array" 
-        });
+        throw new AppError("O campo 'tamanhos' deve ser um array", 400);
       }
 
       const resultado = await ProductService.atualizarTamanhos(id, tamanhos);
 
-      if (!resultado.sucesso) {
-        return res.status(400).json({ erro: resultado.erro });
-      }
-
-      res.status(200).json(resultado.dados);
+      res.status(200).json(resultado);
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 }
