@@ -3,7 +3,6 @@ const { verifyAccess } = require("../../shared/middlewares/access.middleware");
 const { rotaProtegida } = require("../../shared/middlewares/token.middleware");
 const Controller = require("./users.controller");
 
-const { rotaProtegida } = require("../../shared/middlewares/token.middleware");
 const { validarUsuario, apenasAdmin } = require("../../shared/middlewares/user.middleware");
 
 const usersController = new Controller();
