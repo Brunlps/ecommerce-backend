@@ -1,4 +1,4 @@
-const AppError = require("../../shared/errors/AppError");
+// const AppError = require("../../shared/errors/AppError");
 const UsersService = require("./users.service");
 
 class UsersController {
@@ -10,9 +10,18 @@ class UsersController {
     try {
       const user = await this.service.create(req.body);
 
-      res.status(201).json({
+      if (user) {
+        return res.status(201).json({
         data: user,
+        tipo:"success",
         message: "Usuário criado com sucesso",
+      });
+      }
+
+      return res.status(200).json({
+        data: user,
+        tipo:"warning",
+        message: "Ocorreu algum problema ao criar o usuário",
       });
     } catch (error) {
       next(error);
@@ -20,13 +29,27 @@ class UsersController {
   }
 
   async confirmEmail(req, res, next) {
-    try {
+    try  {
       const { token } = req.query;
-      if (!token) throw new AppError("Token não fornecido", 400);
+      if (!token) {
+        return res.status(400).json({
+          tipo: "error",
+          message: "Token de confirmação é obrigatório",
+        });
+      }
 
-      await this.service.confirmEmail(token);
+      const result = await this.service.confirmEmail(token);
+      if (!result) {
+        return res.status(400).json({
+          tipo: "error",
+          message: "Token de confirmação inválido ou expirado",
+        });
+      }
 
-      return res.status(200).json({ message: "E-mail confirmado com sucesso" });
+      return res.status(200).json({
+        tipo: "success",
+        message: "E-mail confirmado com sucesso",
+      });
     } catch (error) {
       next(error);
     }
@@ -35,7 +58,12 @@ class UsersController {
   async getAll(_req, res, next) {
     try {
       const users = await this.service.findAll();
-      res.status(200).json(users);
+      
+      return res.status(200).json({
+        tipo: "success",
+        message: "Usuários encontrados com sucesso",
+        data: users
+      });
     } catch (error) {
       next(error);
     }
@@ -46,7 +74,11 @@ class UsersController {
       const { id } = req.params;
       const user = await this.service.findById(Number(id));
       
-      res.status(200).json(user);
+      return res.status(200).json({
+        tipo: "success",
+        message: "Usuário encontrado com sucesso",
+        data: user
+      });
     } catch (error) {
       next(error);
     }
@@ -58,9 +90,17 @@ class UsersController {
 
       const updatedUser = await this.service.update(Number(id), req.body);
 
-      res.status(200).json({
+      // if (!updatedUser) {
+      //   return res.status(400).json({
+      //     tipo: "error",
+      //     message: "Ocorreu algum problema ao atualizar o usuário",
+      //   });
+      // }
+
+      return res.status(200).json({
+        tipo: "success",
         message: "Usuário atualizado com sucesso",
-        data: updatedUser,
+        // data: updatedUser,
       });
     } catch (error) {
       next(error);
@@ -72,7 +112,10 @@ class UsersController {
       const { id } = req.params;
       await this.service.delete(Number(id));
 
-      res.status(200).json("Usuário deletado com sucesso");
+      return res.status(200).json({
+        tipo: "success",
+        message: "Usuário deletado com sucesso"
+      });
     } catch (error) {
       next(error);
     }

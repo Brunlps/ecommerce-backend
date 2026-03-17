@@ -1,5 +1,8 @@
-const prisma = require("../../database/prisma");
+const UserRepository = require("../../modules/users/user.repository");
+// const prisma = require("../../database/prisma");
 const AppError = require("../../shared/errors/AppError");
+
+const userRepository = new UserRepository();
 
 async function validarUsuario(req, res, next) {
   try {
@@ -9,16 +12,10 @@ async function validarUsuario(req, res, next) {
       throw new AppError("Usuário não autenticado", 401);
     }
 
-    const usuario = await prisma.usuarios.findUnique({
-      where: { id: usuarioId },
-    });
+    const usuario = await userRepository.findById (usuarioId);
 
     if (!usuario) {
       throw new AppError("Usuário não encontrado", 404);
-    }
-
-    if (!usuario.emailVerificado) {
-      throw new AppError("Confirme seu email antes de acessar", 403);
     }
 
     req.usuario = usuario;
@@ -29,17 +26,22 @@ async function validarUsuario(req, res, next) {
   }
 }
 
-function apenasAdmin(req, res, next) {
-  const usuario = req.usuario;
-
-  if (usuario.nivel !== "admin") {
-    return next(new AppError("Acesso permitido apenas para administradores", 403));
+async function verificarEmailConfirmado(reqm, res, next) {
+  try {
+    if(!req.usuario) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+    if (!req.usuario.emailVerificado) {
+      throw new AppError("Confirme seu email antes de acessar", 403);
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-
-  next();
 }
+
 
 module.exports = {
   validarUsuario,
-  apenasAdmin,
+  verificarEmailConfirmado,
 };

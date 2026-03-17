@@ -9,9 +9,9 @@ const router = Router();
 router.get("/", ProductController.getAll);
 router.get("/:id", ProductController.getById);
 
-router.post("/", rotaProtegida, verifyAccess, validarProduto, ProductController.create);
-router.put("/:id", rotaProtegida, verifyAccess, validarProduto, ProductController.update);
-router.delete("/:id", rotaProtegida, verifyAccess, ProductController.delete);
+// router.post("/", rotaProtegida, verifyAccess, validarProduto, ProductController.create);
+// router.put("/:id", rotaProtegida, verifyAccess, validarProduto, ProductController.update);
+// router.delete("/:id", rotaProtegida, verifyAccess, ProductController.delete);
 
 router.put(
   "/:id/tamanhos",
