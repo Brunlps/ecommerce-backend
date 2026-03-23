@@ -4,6 +4,7 @@ const AppError = require("../errors/AppError");
 
 function rotaProtegida(req, res, next) {
   try {
+    console.log("rotaProtegida chamada para:", req.path);
     console.log("authorization header:", req.headers.authorization);
     let token = req.headers.authorization;
 

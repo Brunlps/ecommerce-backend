@@ -1,14 +1,12 @@
 const prisma = require("../../database/prisma");
-const serialize = require("../../shared/utils/serialize");
 
 class ProductRepository {
   async create(data) {
-    const product = await prisma.produtos.create({ data });
-    return serialize(product);
+    return await prisma.produtos.create({ data });
   }
 
   async findAll() {
-    const products = await prisma.produtos.findMany({
+    return await prisma.produtos.findMany({
       include: {
         categoria: true,
         produto_imagens: true,
@@ -16,11 +14,10 @@ class ProductRepository {
       },
       orderBy: { id: "desc" }
     });
-    return serialize(products);
   }
 
   async findById(id) {
-    const product = await prisma.produtos.findUnique({
+    return await prisma.produtos.findUnique({
       where: { id: parseInt(id) },
       include: {
         categoria: true,
@@ -28,15 +25,13 @@ class ProductRepository {
         avaliacoes: true
       }
     });
-    return serialize(product);
   }
 
   async update(id, data) {
-    const product = await prisma.produtos.update({
+    return await prisma.produtos.update({
       where: { id: parseInt(id) },
       data
     });
-    return serialize(product);
   }
 
   async delete(id) {
@@ -60,7 +55,7 @@ class ProductRepository {
   async updateTamanhos(id, tamanhosIds) {
     const product = await prisma.produtos.update({
       where: { id: parseInt(id) },
-      data: { tamanhos: JSON.stringify(tamanhosIds) }
+      data: { tamanhos: tamanhosIds }
     });
     return serialize(product);
   }
@@ -68,17 +63,16 @@ class ProductRepository {
   async updateCores(id, coresIds) {
     const product = await prisma.produtos.update({
       where: { id: parseInt(id) },
-      data: { cores: JSON.stringify(coresIds) }
+      data: { cores: coresIds }
     });
     return serialize(product);
   }
 
   async checkEstoque(ids) {
-    const products = await prisma.produtos.findMany({
+    return await prisma.produtos.findMany({
       where: { id: { in: ids } },
       select: { id: true, nome: true, estoque: true }
     });
-    return products;
   }
 }
 
